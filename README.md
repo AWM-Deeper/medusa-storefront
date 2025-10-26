@@ -136,3 +136,9 @@ MIT
 ## Support
 
 For issues or questions, please reach out to the AWM-Deeper team.
+
+
+## Deployment Status
+- Dashboard: Live on Vercel
+- Storefront: Ready for deployment
+- Backend: Operational at gohaste.medusajs.app
