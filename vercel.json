@@ -1,6 +1,5 @@
 {
-  "buildCommand": "npm npm install --legacy-peer-deps && npm run build build",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run build",  "outputDirectory": "dist",
   "env": {
     "EXPO_PUBLIC_MEDUSA_URL": "https://gohaste.medusajs.app"
   }
