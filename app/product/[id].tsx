@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, ScrollView, Button, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'next/navigation';
 import medusaClient from '@/lib/medusa-client';
 
 /**
- * Product Detail Screen (In Development)
+ * Product Detail Page (Web)
  * 
  * Displays detailed product information including:
  * - Product images
@@ -14,8 +13,16 @@ import medusaClient from '@/lib/medusa-client';
  * - Add to cart functionality
  * - Related products
  */
-export default function ProductDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function ProductDetailPage({ params }: PageProps) {
+  const router = useRouter();
+  const { id } = params;
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -55,84 +62,136 @@ export default function ProductDetailScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <p className="mt-4 text-gray-600">Loading product...</p>
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text style={{ color: 'red', marginBottom: 10 }}>Error: {error}</Text>
-        <Button title="Retry" onPress={loadProduct} />
-      </View>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="max-w-md w-full bg-white rounded-lg shadow p-6">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+          <p className="text-gray-700 mb-4">{error}</p>
+          <button
+            onClick={loadProduct}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
     );
   }
 
   if (!product) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Product not found</Text>
-      </View>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-xl font-semibold text-gray-600">Product not found</div>
+      </div>
     );
   }
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      {/* Product Images */}
-      {product.images && product.images.length > 0 && (
-        <View style={{ width: '100%', aspectRatio: 1 }}>
-          <Image
-            source={{ uri: product.images[0].url }}
-            style={{ width: '100%', height: '100%', resizeMode: 'cover' }}
-          />
-        </View>
-      )}
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <button
+          onClick={() => router.back()}
+          className="mb-6 text-blue-600 hover:text-blue-800 font-semibold"
+        >
+          ← Back
+        </button>
 
-      {/* Product Info */}
-      <View style={{ padding: 16 }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 8 }}>
-          {product.title}
-        </Text>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Product Images */}
+          <div className="flex flex-col gap-4">
+            {product.images && product.images.length > 0 && (
+              <div className="aspect-square bg-white rounded-lg shadow overflow-hidden">
+                <img
+                  src={product.images[0].url}
+                  alt={product.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            {product.images && product.images.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {product.images.slice(0, 4).map((image: any, idx: number) => (
+                  <div key={idx} className="aspect-square bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-md transition">
+                    <img
+                      src={image.url}
+                      alt={`${product.title} ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-        {/* Price */}
-        <View style={{ flexDirection: 'row', marginBottom: 16 }}>
-          {product.variants && product.variants.length > 0 && (
-            <>
-              {product.variants[0].prices && (
-                <Text style={{ fontSize: 20, fontWeight: '600', color: '#2563eb' }}>
-                  ${product.variants[0].prices[0]?.amount / 100}
-                </Text>
-              )}
-            </>
-          )}
-        </View>
+          {/* Product Info */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.title}</h1>
 
-        {/* Description */}
-        {product.description && (
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 14, color: '#666', lineHeight: 22 }}>
-              {product.description}
-            </Text>
-          </View>
-        )}
+            {/* Price */}
+            {product.variants && product.variants.length > 0 && product.variants[0].prices && (
+              <div className="mb-6">
+                <p className="text-3xl font-bold text-blue-600">
+                  ${(product.variants[0].prices[0]?.amount / 100).toFixed(2)}
+                </p>
+              </div>
+            )}
 
-        {/* Quantity Selector */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-          <Text style={{ marginRight: 10, fontWeight: '600' }}>Quantity:</Text>
-          <Button title="-" onPress={() => setQuantity(Math.max(1, quantity - 1))} />
-          <Text style={{ marginHorizontal: 16, fontSize: 16 }}>{quantity}</Text>
-          <Button title="+" onPress={() => setQuantity(quantity + 1)} />
-        </View>
+            {/* Description */}
+            {product.description && (
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">Description</h2>
+                <p className="text-gray-700 leading-relaxed">{product.description}</p>
+              </div>
+            )}
 
-        {/* Add to Cart Button */}
-        <Button
-          title="Add to Cart"
-          onPress={handleAddToCart}
-          color="#2563eb"
-        />
-      </View>
-    </ScrollView>
+            {/* Quantity Selector */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-900 mb-3">Quantity:</label>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition"
+                >
+                  −
+                </button>
+                <span className="text-xl font-semibold text-gray-900 w-12 text-center">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Add to Cart Button */}
+            <button
+              onClick={handleAddToCart}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition mb-4"
+            >
+              Add to Cart
+            </button>
+
+            {/* Product Details */}
+            {product.variants && product.variants.length > 0 && (
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Available Options</h3>
+                <p className="text-gray-600">{product.variants.length} variant(s) available</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
