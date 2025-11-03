@@ -1,38 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useEffect } from 'react';
+import { useStore } from '@/lib/store';
+import Link from 'next/link';
 
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  images: Array<{ url: string }>;
-  price: number;
-}
-
-const BACKEND_URL = 'https://stingray-app-yitsm.ondigitalocean.app';
+const categories = ['All', 'New Arrivals', 'Women', 'Men', 'Accessories'];
 
 export default function HomePage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState(['All', 'New Arrivals', 'Women', 'Men', 'Accessories']);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const { products, productsLoading, fetchProducts, selectedProduct } = useStore();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(`${BACKEND_URL}/admin/products`);
-        setProducts(response.data.products || []);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   return (
     <main className="flex h-full">
@@ -44,9 +23,8 @@ export default function HomePage() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
                 className={`block w-full text-left hover:underline ${
-                  selectedCategory === cat ? 'font-bold text-black' : 'text-gray-700'
+                  'All' === cat ? 'font-bold text-black' : 'text-gray-700'
                 }`}
               >
                 {cat}
@@ -58,7 +36,7 @@ export default function HomePage() {
           <div className="space-y-4 text-sm">
             <div>
               <label className="block font-semibold mb-2">Price Range</label>
-              <input type="range" className="w-full" min="0" max="1000" />
+              <input className="w-full" type="range" min="0" max="1000" />
             </div>
           </div>
         </div>
@@ -73,14 +51,14 @@ export default function HomePage() {
         </div>
 
         {/* Product Grid */}
-        {loading ? (
+        {productsLoading ? (
           <div className="text-center py-12">
             <p className="text-gray-500">Loading products...</p>
           </div>
-        ) : (
+        ) : products && products.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.map((product) => (
-              <a
+              <Link
                 key={product.id}
                 href={`/products/${product.id}`}
                 className="group"
@@ -98,8 +76,12 @@ export default function HomePage() {
                   {product.title}
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">£{product.price}</p>
-              </a>
+              </Link>
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No products available</p>
           </div>
         )}
       </section>
