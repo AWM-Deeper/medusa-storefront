@@ -1,18 +1,19 @@
 'use client';
-
 import { useEffect } from 'react';
-import { useStore } from '@/lib/store';
+import { useStore } from '../../lib/store';
 import Link from 'next/link';
-
-const categories = ['All', 'New Arrivals', 'Women', 'Men', 'Accessories'];
-
+const categories = [
+  'All',
+  'New Arrivals',
+  'Women',
+  'Men',
+  'Accessories',
+];
 export default function HomePage() {
   const { products, productsLoading, fetchProducts, selectedProduct } = useStore();
-
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-
   return (
     <main className="flex h-full">
       {/* Left Sidebar */}
@@ -34,57 +35,86 @@ export default function HomePage() {
           <hr className="my-6" />
           <h3 className="text-sm font-bold mb-4 text-black">FILTERS</h3>
           <div className="space-y-4 text-sm">
-            <div>
-              <label className="block font-semibold mb-2">Price Range</label>
-              <input className="w-full" type="range" min="0" max="1000" />
+            <div className="flex items-center gap-2">
+              <input
+                id="in-stock"
+                type="checkbox"
+                className="w-4 h-4"
+                defaultChecked
+              />
+              <label htmlFor="in-stock" className="cursor-pointer">
+                In Stock Only
+              </label>
             </div>
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <section className="flex-1 p-6 md:p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-black">New Arrivals</h1>
-          <p className="text-gray-600">Discover our latest collection</p>
+      <div className="flex-1 overflow-hidden flex flex-col">
+        {/* Header with search and filters */}
+        <div className="border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold">Shop</h1>
+          </div>
+          <div className="flex gap-4 items-center">
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm"
+            />
+            <select className="px-4 py-2 border border-gray-300 rounded-lg text-sm bg-white">
+              <option>Sort by: Newest</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+              <option>Best Sellers</option>
+            </select>
+          </div>
         </div>
 
-        {/* Product Grid */}
-        {productsLoading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">Loading products...</p>
-          </div>
-        ) : products && products.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <Link
-                key={product.id}
-                href={`/products/${product.id}`}
-                className="group"
-              >
-                <div className="bg-gray-100 aspect-square mb-3 overflow-hidden">
-                  {product.images?.[0]?.url && (
-                    <img
-                      src={product.images[0].url}
-                      alt={product.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  )}
-                </div>
-                <h3 className="text-sm font-semibold text-black group-hover:underline">
-                  {product.title}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">£{product.price}</p>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No products available</p>
-          </div>
-        )}
-      </section>
+        {/* Products Grid */}
+        <div className="flex-1 overflow-auto p-6">
+          {productsLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-500">Loading products...</div>
+            </div>
+          ) : products && products.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {products.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/products/${product.id}`}
+                  className="group"
+                >
+                  <div className="relative overflow-hidden rounded-lg bg-gray-100 aspect-square mb-4">
+                    {product.thumbnail ? (
+                      <img
+                        src={product.thumbnail}
+                        alt={product.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400">
+                        No Image
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="font-medium text-sm mb-2 group-hover:underline">
+                    {product.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    £{(product.variants?.[0]?.prices?.[0]?.amount || 0) / 100}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-500">No products found</div>
+            </div>
+          )}
+        </div>
+      </div>
     </main>
   );
 }
