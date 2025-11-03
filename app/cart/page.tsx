@@ -106,7 +106,9 @@ export default function CartPage() {
                           </span>
                         </div>
                         <p className="text-gray-600 text-sm mb-1">
-                          Date: {new Date(order.created_at).toLocaleDateString()}
+                          Date: {order.created_at
+                            ? new Date(order.created_at).toLocaleDateString()
+                            : 'N/A'}
                         </p>
                         <p className="text-gray-600 text-sm mb-3">
                           Items: {order.items?.length || 0}
