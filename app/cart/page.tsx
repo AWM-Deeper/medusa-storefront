@@ -1,105 +1,113 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useStore } from '@/lib/store';
 import Link from 'next/link';
 
-interface CartItem {
-  id: string;
-  title: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
-
 export default function CartPage() {
-  const [items, setItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      title: 'Premium Cotton T-Shirt',
-      price: 49.99,
-      quantity: 2,
-      image: 'https://via.placeholder.com/100',
-    },
-    {
-      id: '2',
-      title: 'Classic Denim Jeans',
-      price: 89.99,
-      quantity: 1,
-      image: 'https://via.placeholder.com/100',
-    },
-  ]);
+  const { cartItems, orders, ordersLoading, fetchOrders } = useStore();
 
-  const updateQuantity = (id: string, quantity: number) => {
-    if (quantity === 0) {
-      setItems(items.filter((item) => item.id !== id));
-    } else {
-      setItems(
-        items.map((item) =>
-          item.id === id ? { ...item, quantity } : item
-        )
-      );
-    }
-  };
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Use cart items from store, fall back to recent orders
+  const displayItems = cartItems.length > 0 ? cartItems : [];
+  const displayOrders = orders.slice(0, 5);
+
+  const subtotal = displayItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal > 50 ? 0 : 10;
   const tax = subtotal * 0.1;
   const total = subtotal + shipping + tax;
 
   return (
     <main className="max-w-7xl mx-auto p-6 md:p-8">
-      <h1 className="text-4xl font-bold mb-8 text-black">Shopping Bag</h1>
+      <h1 className="text-4xl font-bold mb-8 text-black">Shopping Bag & Recent Orders</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Cart Items */}
+        {/* Cart Items / Orders */}
         <div className="lg:col-span-2">
-          {items.length === 0 ? (
+          {displayItems.length === 0 && displayOrders.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">Your bag is empty</p>
-              <Link href="/" className="text-black hover:underline font-semibold">
+              <p className="text-gray-500 mb-4">Your bag is empty and no recent orders</p>
+              <Link className="text-black hover:underline font-semibold" href="/">
                 Continue Shopping
               </Link>
             </div>
           ) : (
-            <div className="space-y-4 border-b border-gray-200 pb-8">
-              {items.map((item) => (
-                <div key={item.id} className="flex gap-4 pb-4 border-b border-gray-100">
-                  <div className="w-24 h-24 bg-gray-100 flex-shrink-0">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-black">{item.title}</h3>
-                    <p className="text-gray-600 mt-1">£{item.price}</p>
-                    <div className="flex items-center gap-3 mt-3">
-                      <label className="text-sm text-gray-600">Quantity:</label>
-                      <input
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateQuantity(item.id, parseInt(e.target.value))
-                        }
-                        className="w-12 p-1 border border-gray-200 text-center"
-                      />
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-black">£{(item.price * item.quantity).toFixed(2)}</p>
-                    <button
-                      onClick={() => updateQuantity(item.id, 0)}
-                      className="text-sm text-red-600 hover:underline mt-2"
-                    >
-                      Remove
-                    </button>
+            <>
+              {/* Cart Items Section */}
+              {displayItems.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold mb-4 text-black">Cart Items</h2>
+                  <div className="space-y-4 border-b border-gray-200 pb-8">
+                    {displayItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex gap-4 pb-4 border-b border-gray-100"
+                      >
+                        <div className="w-24 h-24 bg-gray-100 flex-shrink-0">
+                          {item.images?.[0]?.url && (
+                            <img
+                              src={item.images[0].url}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-black">{item.title}</h3>
+                          <p className="text-gray-600 mt-1">£{item.price}</p>
+                          <div className="flex items-center gap-3 mt-3">
+                            <label className="text-sm text-gray-600">Quantity:</label>
+                            <span className="w-12 p-1 border border-gray-200 text-center">
+                              {item.quantity}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-black">
+                            £{(item.price * item.quantity).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+
+              {/* Recent Orders Section */}
+              {displayOrders.length > 0 && (
+                <div>
+                  <h2 className="text-2xl font-bold mb-4 text-black">Recent Orders</h2>
+                  <div className="space-y-4">
+                    {displayOrders.map((order) => (
+                      <div
+                        key={order.id}
+                        className="border border-gray-200 p-4 rounded"
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <h3 className="font-semibold text-black">
+                            Order {order.order_number || order.id}
+                          </h3>
+                          <span className="text-sm text-gray-600">
+                            {order.status || 'Pending'}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 text-sm">
+                          {order.created_at
+                            ? new Date(order.created_at).toLocaleDateString()
+                            : 'Date unknown'}
+                        </p>
+                        <p className="text-lg font-bold text-black mt-2">
+                          £{(order.total || 0).toFixed(2)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -128,7 +136,10 @@ export default function CartPage() {
                 <span className="text-black">£{total.toFixed(2)}</span>
               </div>
             </div>
-            <Link href="/checkout" className="w-full bg-black text-white py-3 font-semibold text-center block hover:bg-gray-800 transition-colors">
+            <Link
+              className="w-full bg-black text-white py-3 font-semibold text-center block hover:bg-gray-800 transition-colors"
+              href="/checkout"
+            >
               Proceed to Checkout
             </Link>
           </div>
