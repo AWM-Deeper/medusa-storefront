@@ -1,10 +1,11 @@
 'use client';
 import { useEffect } from 'react';
-import { useStore } from '../../lib/store';
+import { useStore } from '@/lib/store';
 import Link from 'next/link';
 
 export default function CartPage() {
   const { cartItems, orders, ordersLoading, fetchOrders } = useStore();
+  
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
@@ -75,7 +76,7 @@ export default function CartPage() {
                   </div>
                 </div>
               )}
-
+              
               {/* Recent Orders Section */}
               {displayOrders.length > 0 && (
                 <div className="mb-8">
@@ -87,18 +88,32 @@ export default function CartPage() {
                         className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-semibold text-gray-600">Order #{order.id}</span>
-                          <span className={`text-xs px-2 py-1 rounded ${
-                            order.status === 'fulfilled' ? 'bg-green-100 text-green-700' :
-                            order.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-red-100 text-red-700'
-                          }`}>
-                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          <span className="text-sm font-semibold text-gray-600">
+                            Order #{order.id}
+                          </span>
+                          <span
+                            className={`text-xs px-2 py-1 rounded ${
+                              order.status === 'fulfilled'
+                                ? 'bg-green-100 text-green-700'
+                                : order.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : 'bg-red-100 text-red-700'
+                            }`}
+                          >
+                            {order.status
+                              ? order.status.charAt(0).toUpperCase() + order.status.slice(1)
+                              : 'Unknown'}
                           </span>
                         </div>
-                        <p className="text-gray-600 text-sm mb-1">Date: {new Date(order.created_at).toLocaleDateString()}</p>
-                        <p className="text-gray-600 text-sm mb-3">Items: {order.items?.length || 0}</p>
-                        <p className="text-black font-semibold">Total: £{(order.total / 100).toFixed(2)}</p>
+                        <p className="text-gray-600 text-sm mb-1">
+                          Date: {new Date(order.created_at).toLocaleDateString()}
+                        </p>
+                        <p className="text-gray-600 text-sm mb-3">
+                          Items: {order.items?.length || 0}
+                        </p>
+                        <p className="text-black font-semibold">
+                          Total: £{((order.total || 0) / 100).toFixed(2)}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -107,7 +122,7 @@ export default function CartPage() {
             </>
           )}
         </div>
-
+        
         {/* Order Summary */}
         <div className="lg:col-span-1">
           <div className="border border-gray-200 rounded-lg p-6 sticky top-6 bg-white">
@@ -133,10 +148,16 @@ export default function CartPage() {
               <span className="text-xl font-bold text-black">Total</span>
               <span className="text-2xl font-bold text-black">£{total.toFixed(2)}</span>
             </div>
-            <Link href="/checkout" className="block w-full bg-black text-white py-3 text-center font-semibold hover:bg-gray-800 transition-colors mb-3 rounded">
+            <Link
+              href="/checkout"
+              className="block w-full bg-black text-white py-3 text-center font-semibold hover:bg-gray-800 transition-colors mb-3 rounded"
+            >
               Proceed to Checkout
             </Link>
-            <Link href="/" className="block w-full text-center text-black hover:underline font-semibold py-2">
+            <Link
+              href="/"
+              className="block w-full text-center text-black hover:underline font-semibold py-2"
+            >
               Continue Shopping
             </Link>
           </div>
