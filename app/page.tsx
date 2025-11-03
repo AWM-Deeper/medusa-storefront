@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { useStore } from '../../lib/store';
+import { useStore } from '../lib/store';
 import Link from 'next/link';
 const categories = [
   'All',
@@ -42,14 +42,13 @@ export default function HomePage() {
                 className="w-4 h-4"
                 defaultChecked
               />
-              <label htmlFor="in-stock" className="cursor-pointer">
+              <label className="cursor-pointer" htmlFor="in-stock">
                 In Stock Only
               </label>
             </div>
           </div>
         </div>
       </aside>
-
       {/* Main Content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Header with search and filters */}
@@ -71,7 +70,6 @@ export default function HomePage() {
             </select>
           </div>
         </div>
-
         {/* Products Grid */}
         <div className="flex-1 overflow-auto p-6">
           {productsLoading ? (
