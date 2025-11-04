@@ -57,155 +57,178 @@ export default function DashboardPage() {
   }, [orders]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white/50 via-transparent to-white/30 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100/50">
+      {/* Sidebar Navigation */}
+      <div className="fixed left-0 top-0 h-screen w-64 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 backdrop-blur-xl border-r border-white/10 p-6">
+        <div className="space-y-8">
+          {/* Logo & Branding */}
+          <div>
+            <h1 className="text-2xl font-bold text-white">HASTE</h1>
+            <p className="text-xs text-slate-400 mt-1">Merchant Console</p>
+          </div>
+
+          {/* Navigation Sections */}
+          <nav className="space-y-8">
+            {/* Main Section */}
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Main</p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-white/10 text-white">
+                  <span className="text-sm">📊</span>
+                  <span className="text-sm font-medium">Dashboard</span>
+                </div>
+                <Link href="#" className="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-white/5 transition-colors">
+                  <span className="text-sm">📦</span>
+                  <span className="text-sm font-medium">Orders</span>
+                </Link>
+                <Link href="#" className="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-white/5 transition-colors">
+                  <span className="text-sm">📈</span>
+                  <span className="text-sm font-medium">Analytics</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Products Section */}
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Products</p>
+              <div className="space-y-3">
+                <Link href="#" className="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-white/5 transition-colors">
+                  <span className="text-sm">🛍️</span>
+                  <span className="text-sm font-medium">Catalog</span>
+                </Link>
+                <Link href="#" className="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-white/5 transition-colors">
+                  <span className="text-sm">📋</span>
+                  <span className="text-sm font-medium">Inventory</span>
+                </Link>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="ml-64 p-8">
+        {/* Top Header */}
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-black via-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
-            Merchant Dashboard
-          </h1>
-          <p className="text-gray-600">Manage your HASTE store with real-time insights</p>
+          <h2 className="text-3xl font-bold text-slate-900 mb-2">Dashboard</h2>
+          <p className="text-slate-600">Real-time insights and store management</p>
         </div>
 
         {/* KPI Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {/* Total Inventory */}
-          <div className="glass-card p-6 group hover:shadow-xl transition-all duration-300">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-gray-600 text-sm font-medium uppercase tracking-wide">Total Inventory</p>
-                <p className="text-3xl md:text-4xl font-bold text-black mt-2">
-                  {kpiData?.totalInventory || 0}
-                </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          {/* Total Sales Card */}
+          <div className="group relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-lg blur opacity-0 group-hover:opacity-20 transition duration-300"></div>
+            <div className="relative bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-slate-600">Total Sales</p>
+                <span className="text-lg">💷</span>
               </div>
-              <div className="text-4xl opacity-20 group-hover:opacity-40 transition-opacity">📦</div>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-slate-900">{formatCurrency(kpiData?.totalSales || 0)}</p>
+                <p className="text-xs text-emerald-600 font-medium">↑ 12% vs last month</p>
+              </div>
             </div>
-            <div className="text-xs text-green-600 font-semibold">✓ In Stock</div>
           </div>
 
-          {/* Total Orders */}
-          <div className="glass-card p-6 group hover:shadow-xl transition-all duration-300">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-gray-600 text-sm font-medium uppercase tracking-wide">Total Orders</p>
-                <p className="text-3xl md:text-4xl font-bold text-black mt-2">
-                  {kpiData?.totalOrders || 0}
-                </p>
+          {/* Total Orders Card */}
+          <div className="group relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg blur opacity-0 group-hover:opacity-20 transition duration-300"></div>
+            <div className="relative bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-slate-600">Total Orders</p>
+                <span className="text-lg">📦</span>
               </div>
-              <div className="text-4xl opacity-20 group-hover:opacity-40 transition-opacity">📊</div>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-slate-900">{orders?.length || 0}</p>
+                <p className="text-xs text-emerald-600 font-medium">↑ 8% vs last month</p>
+              </div>
             </div>
-            <div className="text-xs text-blue-600 font-semibold">↗ All Time</div>
           </div>
 
-          {/* Total Sales */}
-          <div className="glass-card p-6 group hover:shadow-xl transition-all duration-300">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-gray-600 text-sm font-medium uppercase tracking-wide">Total Sales</p>
-                <p className="text-3xl md:text-4xl font-bold text-black mt-2">
-                  {formatCurrency(kpiData?.totalSales || 0)}
-                </p>
+          {/* Active Customers Card */}
+          <div className="group relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-400 rounded-lg blur opacity-0 group-hover:opacity-20 transition duration-300"></div>
+            <div className="relative bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-slate-600">Active Customers</p>
+                <span className="text-lg">👥</span>
               </div>
-              <div className="text-4xl opacity-20 group-hover:opacity-40 transition-opacity">💰</div>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-slate-900">{kpiData?.activeCustomers || 0}</p>
+                <p className="text-xs text-emerald-600 font-medium">↑ 5% vs last month</p>
+              </div>
             </div>
-            <div className="text-xs text-emerald-600 font-semibold">✓ Revenue</div>
           </div>
 
-          {/* Average Order Value */}
-          <div className="glass-card p-6 group hover:shadow-xl transition-all duration-300">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-gray-600 text-sm font-medium uppercase tracking-wide">Avg Order Value</p>
-                <p className="text-3xl md:text-4xl font-bold text-black mt-2">
-                  {formatCurrency(kpiData?.avgOrderValue || 0)}
-                </p>
+          {/* Conversion Rate Card */}
+          <div className="group relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 rounded-lg blur opacity-0 group-hover:opacity-20 transition duration-300"></div>
+            <div className="relative bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-slate-600">Conversion Rate</p>
+                <span className="text-lg">📈</span>
               </div>
-              <div className="text-4xl opacity-20 group-hover:opacity-40 transition-opacity">⭐</div>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-slate-900">{kpiData?.conversionRate?.toFixed(2) || '0'}%</p>
+                <p className="text-xs text-emerald-600 font-medium">↑ 2% vs last month</p>
+              </div>
             </div>
-            <div className="text-xs text-purple-600 font-semibold">Per Order</div>
           </div>
         </div>
 
-        {/* Recent Orders Section */}
-        <div className="glass-card overflow-hidden shadow-lg">
-          <div className="px-6 py-5 border-b border-white/30 bg-white/40 backdrop-blur-sm">
-            <h2 className="text-xl font-bold text-black flex items-center gap-3">
-              <span className="text-2xl">📋</span>
-              Recent Orders
-            </h2>
+        {/* Section Divider */}
+        <div className="my-8">
+          <div className="flex items-center gap-4">
+            <h3 className="text-lg font-semibold text-slate-900">Recent Orders</h3>
+            <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent"></div>
           </div>
+        </div>
 
-          {displayOrders.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/30 bg-white/30 backdrop-blur-sm">
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 uppercase tracking-wide">Order ID</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 uppercase tracking-wide">Customer</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 uppercase tracking-wide">Amount</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 uppercase tracking-wide">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 uppercase tracking-wide">Date</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 uppercase tracking-wide">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayOrders.map((order: any, idx) => (
-                    <tr
-                      key={order.id || idx}
-                      className="border-b border-white/30 hover:bg-white/30 transition-all duration-200"
-                    >
-                      <td className="px-6 py-4 text-sm font-mono font-semibold text-blue-600">
-                        {order.id?.slice(-8).toUpperCase() || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-700 font-medium">
-                        {order.customer?.name || 'Guest'}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold text-black">
-                        {formatCurrency(order.total || 0)}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <span
-                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm ${getStatusColor(
-                            order.status
-                          )}`}
-                        >
-                          <span className="text-lg">{getStatusIcon(order.status)}</span>
-                          {order.status
-                            ? order.status.charAt(0).toUpperCase() +
-                              order.status.slice(1).toLowerCase()
-                            : 'Unknown'}
+        {/* Orders Table */}
+        <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-200/50 bg-slate-50/50">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Order ID</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Customer</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayOrders && displayOrders.length > 0 ? (
+                  displayOrders.map((order: any, index: number) => (
+                    <tr key={index} className="border-b border-slate-100/50 hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-medium text-slate-900">{order?.id || 'N/A'}</td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{order?.customer?.name || 'Unknown'}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-slate-900">{formatCurrency(order?.total || 0)}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order?.status)}`}>
+                          <span className="text-xs">{getStatusIcon(order?.status)}</span>
+                          {order?.status || 'pending'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {order.created_at
-                          ? new Date(order.created_at).toLocaleDateString('en-GB')
-                          : 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <Link
-                          href={`/order/${order.id}`}
-                          className="inline-flex px-3 py-1.5 bg-blue-600/80 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-all duration-200 backdrop-blur-sm"
-                        >
-                          View
-                        </Link>
-                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{order?.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}</td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="px-6 py-12 text-center">
-              <div className="text-5xl mb-4">📭</div>
-              <p className="text-gray-600 font-medium">No recent orders</p>
-              <p className="text-sm text-gray-500 mt-2">Your orders will appear here once customers make purchases</p>
-            </div>
-          )}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center">
+                      <p className="text-slate-500 text-sm">No orders yet. Start selling!</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-8 text-center text-sm text-gray-600">
-          <p>🚀 HASTE Merchant Dashboard • Real-time Order Management</p>
+        {/* Footer */}
+        <div className="mt-8 text-center text-sm text-slate-500">
+          <p>HASTE Merchant Dashboard • Always up to date</p>
         </div>
       </div>
     </div>
