@@ -34,18 +34,18 @@ export interface Product {
 export interface Order {
   id: string;
   order_number?: string;
-  total?: number;
+  customer_id?: string;
+  total: number;
   status?: string;
+  store_id?: string;
   created_at?: string;
-  items?: OrderItem[];
   [key: string]: any;
 }
 
-export interface OrderItem {
+export interface Store {
   id: string;
-  product_id?: string;
-  quantity: number;
-  price: number;
+  name: string;
+  region?: string;
   [key: string]: any;
 }
 
@@ -95,6 +95,40 @@ export const getOrder = async (id: string): Promise<Order | null> => {
   } catch (error) {
     console.error(`Error fetching order ${id}:`, error);
     return null;
+  }
+};
+
+// Stores API
+export const getStores = async (): Promise<Store[]> => {
+  try {
+    const response = await apiClient.get('/admin/stores');
+    return response.data.stores || response.data || [];
+  } catch (error) {
+    console.error('Error fetching stores:', error);
+    return [];
+  }
+};
+
+// Calculate revenue per store from orders
+export const calculateStoreRevenues = async (): Promise<Record<string, number>> => {
+  try {
+    const orders = await getOrders();
+    const storeRevenues: Record<string, number> = {};
+    
+    orders.forEach((order: Order) => {
+      const storeId = order.store_id || 'unknown';
+      const orderTotal = order.total || 0;
+      
+      if (!storeRevenues[storeId]) {
+        storeRevenues[storeId] = 0;
+      }
+      storeRevenues[storeId] += orderTotal;
+    });
+    
+    return storeRevenues;
+  } catch (error) {
+    console.error('Error calculating store revenues:', error);
+    return {};
   }
 };
 
