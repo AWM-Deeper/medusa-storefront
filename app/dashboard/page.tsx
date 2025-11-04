@@ -43,12 +43,8 @@ function getStatusIcon(status?: string) {
 }
 
 export default function DashboardPage() {
-  const { orders = [], kpiData, fetchOrders } = useStore();
+  const { orders = [], kpiData } = useStore();
   const [displayOrders, setDisplayOrders] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchOrders?.();
-  }, [fetchOrders]);
 
   useEffect(() => {
     if (orders && Array.isArray(orders)) {
@@ -146,32 +142,32 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Active Customers Card */}
+          {/* Avg Order Value Card */}
           <div className="group relative">
             <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-400 rounded-lg blur opacity-0 group-hover:opacity-20 transition duration-300"></div>
             <div className="relative bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-medium text-slate-600">Active Customers</p>
-                <span className="text-lg">👥</span>
+                <p className="text-sm font-medium text-slate-600">Avg Order Value</p>
+                <span className="text-lg">📊</span>
               </div>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-slate-900">{kpiData?.activeCustomers || 0}</p>
+                <p className="text-2xl font-bold text-slate-900">{formatCurrency((kpiData?.totalSales || 0) / Math.max(orders?.length || 1, 1))}</p>
                 <p className="text-xs text-emerald-600 font-medium">↑ 5% vs last month</p>
               </div>
             </div>
           </div>
 
-          {/* Conversion Rate Card */}
+          {/* Pending Orders Card */}
           <div className="group relative">
             <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 rounded-lg blur opacity-0 group-hover:opacity-20 transition duration-300"></div>
             <div className="relative bg-white/80 backdrop-blur-sm border border-white/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-medium text-slate-600">Conversion Rate</p>
-                <span className="text-lg">📈</span>
+                <p className="text-sm font-medium text-slate-600">Pending Orders</p>
+                <span className="text-lg">⏳</span>
               </div>
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-slate-900">{kpiData?.conversionRate?.toFixed(2) || '0'}%</p>
-                <p className="text-xs text-emerald-600 font-medium">↑ 2% vs last month</p>
+                <p className="text-2xl font-bold text-slate-900">{(orders?.filter((o: any) => o?.status === 'pending'))?.length || 0}</p>
+                <p className="text-xs text-amber-600 font-medium">Need attention</p>
               </div>
             </div>
           </div>
