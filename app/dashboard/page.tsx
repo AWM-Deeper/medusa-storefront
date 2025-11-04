@@ -33,7 +33,6 @@ function getStatusIcon(status?: string) {
     default: return '•';
   }
 }
-
 const TABS = [
   { key: 'dashboard', label: 'Dashboard', icon: '📊' },
   { key: 'orders', label: 'Orders', icon: '📦' },
@@ -42,11 +41,22 @@ const TABS = [
   { key: 'inventory', label: 'Inventory', icon: '📋' },
   { key: 'stores', label: 'Connected Stores', icon: '🏪' },
 ];
-
 export default function DashboardPage() {
-  const { orders = [], kpiData, stores = [] } = useStore();
+  const {
+    orders = [],
+    kpiData,
+    stores = [],
+    fetchOrders,
+    fetchStores,
+    storeRevenues = {},
+  } = useStore();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [displayOrders, setDisplayOrders] = useState<any[]>(orders || []);
+
+  useEffect(() => {
+    fetchStores();
+    fetchOrders();
+  }, [fetchStores, fetchOrders]);
 
   useEffect(() => {
     if (orders && Array.isArray(orders)) {
@@ -54,13 +64,11 @@ export default function DashboardPage() {
     }
   }, [orders]);
 
-  // Mock revenue calculation and store list
-  // Replace with live API fetching hooks as needed for production
-  const mockedStores = stores.length ? stores : [
-    { id: 'store1', name: 'Main Shop', revenue: 3421.32 },
-    { id: 'store2', name: 'PopUp Outlet', revenue: 1221.00 },
-    { id: 'store3', name: 'Demo Stand', revenue: 532.59 }
-  ];
+  // Use real stores with revenue, fall back to empty state
+  const realStores = (stores.length ? stores : []).map(store => ({
+    ...store,
+    revenue: storeRevenues[store.id] || 0,
+  }));
 
   const handleCardAction = (action: string) => {
     alert(`Action: ${action}`);
@@ -79,8 +87,8 @@ export default function DashboardPage() {
           {/* Navigation Tabs */}
           <nav className="space-y-3">
             {TABS.map(tab => (
-              <button key={tab.key} className={`flex w-full items-center gap-3 px-4 py-2 rounded-lg transition-colors font-medium ${activeTab === tab.key ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5'}`} onClick={() => setActiveTab(tab.key)}>
-                <span>{tab.icon}</span><span>{tab.label}</span>
+              <button key={tab.key} className={`flex gap-3 items-center px-4 py-2 rounded-lg text-white font-medium w-full hover:bg-white transition-colors`} onClick={() => setActiveTab(tab.key)}>
+                {tab.icon}{tab.label}
               </button>
             ))}
           </nav>
@@ -181,7 +189,7 @@ export default function DashboardPage() {
                           <td className="px-6 py-4 text-sm text-slate-600">{order?.customer?.name || 'Unknown'}</td>
                           <td className="px-6 py-4 text-sm font-semibold text-slate-900">{formatCurrency(order?.total || 0)}</td>
                           <td className="px-6 py-4">
-                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order?.status)}`}>
+                            <span className={`inline-flex font-medium gap-1 items-center px-3 py-1 rounded-full text-xs`}>
                               <span className="text-xs">{getStatusIcon(order?.status)}</span>
                               {order?.status || 'pending'}
                             </span>
@@ -191,7 +199,7 @@ export default function DashboardPage() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={5} className="px-6 py-12 text-center">
+                        <td className="px-6 py-12 text-center" colSpan={5}>
                           <p className="text-slate-500 text-sm">No orders yet. Start selling!</p>
                         </td>
                       </tr>
@@ -219,18 +227,18 @@ export default function DashboardPage() {
               <tbody>
                 {orders && orders.length > 0 ? (
                   orders.map((order: any, idx: number) => (
-                    <tr key={idx} className="border-b last:border-0">
+                    <tr className="border-b last:border-0" key={idx}>
                       <td className="px-4 py-2 font-bold">{order?.id}</td>
                       <td className="px-4 py-2">{order?.customer?.name || 'Unknown'}</td>
                       <td className="px-4 py-2">{formatCurrency(order?.total || 0)}</td>
                       <td className="px-4 py-2">
-                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs ${getStatusColor(order?.status)}`}>{getStatusIcon(order?.status)} {order?.status}</span>
+                        <span className={`inline-flex gap-1 items-center px-3 py-1 rounded text-xs ${getStatusColor(order?.status)}`}>{getStatusIcon(order?.status)} {order?.status}</span>
                       </td>
                       <td className="px-4 py-2">{order?.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}</td>
                     </tr>
                   ))
                 ) : (
-                  <tr><td colSpan={5} className="text-center py-8 text-slate-500">No orders found.</td></tr>
+                  <td className="text-center py-8 text-slate-500" colSpan={5}>No orders found.</td>
                 )}
               </tbody>
             </table>
@@ -249,16 +257,21 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockedStores.map((store, idx) => (
-                  <tr key={store.id} className="border-b last:border-0">
-                    <td className="px-4 py-2 font-semibold">{store.name}</td>
-                    <td className="px-4 py-2">{store.id}</td>
-                    <td className="px-4 py-2">{formatCurrency(store.revenue)}</td>
+                {realStores.length === 0 ? (
+                  <tr>
+                    <td className="text-center py-8 text-slate-500" colSpan={3}>No connected stores found.</td>
                   </tr>
-                ))}
+                ) : (
+                  realStores.map((store: any, idx: number) => (
+                    <tr className="border-b last:border-0" key={store.id}>
+                      <td className="px-4 py-2 font-semibold">{store.name}</td>
+                      <td className="px-4 py-2">{store.id}</td>
+                      <td className="px-4 py-2">{formatCurrency(store.revenue)}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         )}
-        {/* Analytics, Catalog, Inventory Tabs (optional - placeholder) */}
-        {(activeTab === 'analytics' || activeTab === 'catalog' || activeTab === 'inventory') && (
+        {/* Analytics, Catalog, Inventory Tabs (optional - placeholder
