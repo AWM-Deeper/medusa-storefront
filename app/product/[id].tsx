@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import medusaClient from '@/lib/medusa-client';
+import React, {
+  useState,
+  useEffect
+} from 'react';
+import {
+  useRouter
+} from 'next/navigation';
+import { medusaClient } from '@/lib/medusa-client';
 
 /**
  * Product Detail Page (Web)
@@ -13,20 +18,25 @@ import medusaClient from '@/lib/medusa-client';
  * - Add to cart functionality
  * - Related products
  */
-
 interface PageProps {
   params: {
     id: string;
   };
 }
 
-export default function ProductDetailPage({ params }: PageProps) {
+export default function ProductDetailPage(
+  { params }: PageProps
+) {
   const router = useRouter();
   const { id } = params;
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<any>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     loadProduct();
@@ -36,11 +46,15 @@ export default function ProductDetailPage({ params }: PageProps) {
     try {
       setLoading(true);
       if (id) {
-        const product = await medusaClient.getProductById(id);
+        const product = await medusaClient.getProductById(
+          id
+        );
         setProduct(product);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load product');
+      setError(
+        err.message || 'Failed to load product'
+      );
     } finally {
       setLoading(false);
     }
@@ -54,7 +68,11 @@ export default function ProductDetailPage({ params }: PageProps) {
       // 3. Call medusaClient.addToCart()
       // 4. Show success message
       // 5. Navigate to cart or show toast
-      console.log(`Adding ${quantity} item(s) to cart`);
+      console.log(
+        `Adding ${
+          quantity
+        } item(s) to cart`
+      );
     } catch (err) {
       console.error('Error adding to cart:', err);
     }
@@ -65,7 +83,9 @@ export default function ProductDetailPage({ params }: PageProps) {
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="mt-4 text-gray-600">Loading product...</p>
+          <p className="mt-4 text-gray-600">
+            Loading product...
+          </p>
         </div>
       </div>
     );
@@ -74,14 +94,15 @@ export default function ProductDetailPage({ params }: PageProps) {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="max-w-md w-full bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-          <p className="text-gray-700 mb-4">{error}</p>
+        <div className="text-center">
+          <p className="text-red-600 font-semibold">
+            Error: {error}
+          </p>
           <button
-            onClick={loadProduct}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+            onClick={() => router.push('/products')}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Retry
+            Back to Products
           </button>
         </div>
       </div>
@@ -91,83 +112,91 @@ export default function ProductDetailPage({ params }: PageProps) {
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-xl font-semibold text-gray-600">Product not found</div>
+        <p className="text-gray-500">Product not found</p>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <button
-          onClick={() => router.back()}
-          className="mb-6 text-blue-600 hover:text-blue-800 font-semibold"
-        >
-          ← Back
-        </button>
+      {/* Breadcrumb */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+        <div className="flex items-center gap-2 text-sm">
+          <a href="/products" className="text-blue-600 hover:underline">
+            Products
+          </a>
+          <span className="text-gray-400">/</span>
+          <span className="text-gray-600">
+            {product.name}
+          </span>
+        </div>
+      </div>
 
+      {/* Product Details */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Product Images */}
-          <div className="flex flex-col gap-4">
-            {product.images && product.images.length > 0 && (
-              <div className="aspect-square bg-white rounded-lg shadow overflow-hidden">
-                <img
-                  src={product.images[0].url}
-                  alt={product.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-            {product.images && product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
-                {product.images.slice(0, 4).map((image: any, idx: number) => (
-                  <div key={idx} className="aspect-square bg-white rounded-lg shadow overflow-hidden cursor-pointer hover:shadow-md transition">
-                    <img
-                      src={image.url}
-                      alt={`${product.title} ${idx + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+          {/* Product Image */}
+          <div className="flex items-center justify-center bg-white rounded-lg shadow p-6">
+            <img
+              src={
+                product.images?.[0]?.url ||
+                '/placeholder.png'
+              }
+              alt={product.name}
+              className="w-full h-auto object-cover rounded"
+            />
           </div>
 
           {/* Product Info */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.title}</h1>
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {product.name}
+              </h1>
+              <p className="mt-2 text-xl text-gray-600">
+                {product.description}
+              </p>
+            </div>
 
-            {/* Price */}
-            {product.variants && product.variants.length > 0 && product.variants[0].prices && (
-              <div className="mb-6">
-                <p className="text-3xl font-bold text-blue-600">
-                  ${(product.variants[0].prices[0]?.amount / 100).toFixed(2)}
-                </p>
+            {/* Pricing */}
+            <div className="border-t border-b border-gray-200 py-4">
+              <div className="text-3xl font-bold text-gray-900">
+                £{(product.variants?.[0]?.prices?.[0]?.amount || product.price || 0) / 100}
               </div>
-            )}
-
-            {/* Description */}
-            {product.description && (
-              <div className="mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">Description</h2>
-                <p className="text-gray-700 leading-relaxed">{product.description}</p>
-              </div>
-            )}
+              <p className="text-sm text-gray-500 mt-1">
+                {product.variants?.[0]?.in_stock
+                  ? 'In Stock'
+                  : 'Out of Stock'}
+              </p>
+            </div>
 
             {/* Quantity Selector */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-900 mb-3">Quantity:</label>
-              <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700">
+                Quantity:
+              </label>
+              <div className="flex items-center border border-gray-300 rounded">
                 <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition"
+                  onClick={() =>
+                    setQuantity(Math.max(1, quantity - 1))
+                  }
+                  className="px-3 py-2 text-gray-600 hover:bg-gray-100"
                 >
                   −
                 </button>
-                <span className="text-xl font-semibold text-gray-900 w-12 text-center">{quantity}</span>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) =>
+                    setQuantity(
+                      Math.max(1, parseInt(e.target.value) || 1)
+                    )
+                  }
+                  className="w-12 text-center border-0 py-2"
+                />
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition"
+                  className="px-3 py-2 text-gray-600 hover:bg-gray-100"
                 >
                   +
                 </button>
@@ -177,18 +206,36 @@ export default function ProductDetailPage({ params }: PageProps) {
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition mb-4"
+              disabled={
+                !product.variants?.[0]?.in_stock ||
+                quantity === 0
+              }
+              className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
             >
               Add to Cart
             </button>
 
-            {/* Product Details */}
-            {product.variants && product.variants.length > 0 && (
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Available Options</h3>
-                <p className="text-gray-600">{product.variants.length} variant(s) available</p>
-              </div>
-            )}
+            {/* Product Meta */}
+            <div className="pt-6 border-t border-gray-200 space-y-2 text-sm">
+              {product.sku && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">SKU:</span>
+                  <span className="font-medium text-gray-900">
+                    {product.sku}
+                  </span>
+                </div>
+              )}
+              {product.collection && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">
+                    Collection:
+                  </span>
+                  <span className="font-medium text-gray-900">
+                    {product.collection.name}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
