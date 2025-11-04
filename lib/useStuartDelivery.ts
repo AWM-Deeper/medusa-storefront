@@ -5,7 +5,6 @@
  * in React/React Native components. It manages the state and API calls
  * for creating deliveries and tracking shipments.
  */
-
 import { useState, useCallback, useEffect } from 'react';
 import { getStuartClient } from './stuart-client';
 import type { ParcelRequest, DeliveryRequest, TrackingInfo } from './stuart-client';
@@ -72,15 +71,13 @@ export const useStuartDelivery = (): UseStuartDeliveryReturn => {
   const createJob = useCallback(
     async (parcelRequest: ParcelRequest): Promise<boolean> => {
       setState((prev) => ({ ...prev, loading: true, error: null }));
-
       try {
         const result = await client.createJob(parcelRequest);
-
         if (result.success && result.jobId) {
           setState((prev) => ({
             ...prev,
             loading: false,
-            jobId: result.jobId,
+            jobId: result.jobId ?? null,
             error: null,
           }));
           console.log('Stuart job created:', result.jobId);
@@ -89,12 +86,12 @@ export const useStuartDelivery = (): UseStuartDeliveryReturn => {
           setState((prev) => ({
             ...prev,
             loading: false,
-            error: result.error || 'Failed to create Stuart job',
+            error: result.error ?? 'Failed to create Stuart job',
           }));
           return false;
         }
       } catch (error: any) {
-        const errorMessage = error.message || 'An error occurred while creating Stuart job';
+        const errorMessage = error.message ?? 'An error occurred while creating Stuart job';
         setState((prev) => ({
           ...prev,
           loading: false,
@@ -113,15 +110,13 @@ export const useStuartDelivery = (): UseStuartDeliveryReturn => {
   const createDelivery = useCallback(
     async (deliveryRequest: DeliveryRequest): Promise<boolean> => {
       setState((prev) => ({ ...prev, loading: true, error: null }));
-
       try {
         const result = await client.createDelivery(deliveryRequest);
-
         if (result.success && result.deliveryId) {
           setState((prev) => ({
             ...prev,
             loading: false,
-            deliveryId: result.deliveryId,
+            deliveryId: result.deliveryId ?? null,
             error: null,
           }));
           console.log('Stuart delivery created:', result.deliveryId);
@@ -130,12 +125,12 @@ export const useStuartDelivery = (): UseStuartDeliveryReturn => {
           setState((prev) => ({
             ...prev,
             loading: false,
-            error: result.error || 'Failed to create Stuart delivery',
+            error: result.error ?? 'Failed to create Stuart delivery',
           }));
           return false;
         }
       } catch (error: any) {
-        const errorMessage = error.message || 'An error occurred while creating Stuart delivery';
+        const errorMessage = error.message ?? 'An error occurred while creating Stuart delivery';
         setState((prev) => ({
           ...prev,
           loading: false,
@@ -154,15 +149,13 @@ export const useStuartDelivery = (): UseStuartDeliveryReturn => {
   const getTracking = useCallback(
     async (deliveryId: string): Promise<boolean> => {
       setState((prev) => ({ ...prev, loading: true, error: null }));
-
       try {
         const result = await client.getTracking(deliveryId);
-
         if (result.success && result.tracking) {
           setState((prev) => ({
             ...prev,
             loading: false,
-            tracking: result.tracking || null,
+            tracking: result.tracking ?? null,
             error: null,
           }));
           console.log('Tracking info retrieved:', result.tracking);
@@ -171,12 +164,12 @@ export const useStuartDelivery = (): UseStuartDeliveryReturn => {
           setState((prev) => ({
             ...prev,
             loading: false,
-            error: result.error || 'Failed to retrieve tracking',
+            error: result.error ?? 'Failed to retrieve tracking',
           }));
           return false;
         }
       } catch (error: any) {
-        const errorMessage = error.message || 'An error occurred while fetching tracking';
+        const errorMessage = error.message ?? 'An error occurred while fetching tracking';
         setState((prev) => ({
           ...prev,
           loading: false,
@@ -195,10 +188,8 @@ export const useStuartDelivery = (): UseStuartDeliveryReturn => {
   const cancelDelivery = useCallback(
     async (jobId: string): Promise<boolean> => {
       setState((prev) => ({ ...prev, loading: true, error: null }));
-
       try {
         const result = await client.cancelDelivery(jobId);
-
         if (result.success) {
           setState((prev) => ({
             ...prev,
@@ -213,12 +204,12 @@ export const useStuartDelivery = (): UseStuartDeliveryReturn => {
           setState((prev) => ({
             ...prev,
             loading: false,
-            error: result.error || 'Failed to cancel delivery',
+            error: result.error ?? 'Failed to cancel delivery',
           }));
           return false;
         }
       } catch (error: any) {
-        const errorMessage = error.message || 'An error occurred while cancelling delivery';
+        const errorMessage = error.message ?? 'An error occurred while cancelling delivery';
         setState((prev) => ({
           ...prev,
           loading: false,
