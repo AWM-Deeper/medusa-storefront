@@ -1,6 +1,10 @@
 'use client';
-import { useEffect } from 'react';
-import { useStore } from '../../lib/store';
+import {
+  useEffect
+} from 'react';
+import {
+  useStore
+} from '../../lib/store';
 import Link from 'next/link';
 
 function formatCurrency(value: number) {
@@ -28,7 +32,14 @@ function getStatusColor(status?: string) {
 }
 
 export default function DashboardPage() {
-  const { kpiData, kpiLoading, fetchKPIData, orders, fetchOrders } = useStore();
+  const {
+    kpiData,
+    kpiLoading,
+    fetchKPIData,
+    orders,
+    fetchOrders
+  } = useStore();
+
   useEffect(() => {
     fetchKPIData();
     fetchOrders();
@@ -74,96 +85,103 @@ export default function DashboardPage() {
               v2.0
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              className="text-sm font-semibold text-gray-700 hover:text-gray-900 px-3 py-2"
-              href="/"
-            >
-              Storefront
-            </Link>
-            <button className="text-sm font-semibold bg-gray-900 text-white hover:bg-black px-3 py-2 rounded-md">
-              New Product
-            </button>
-          </div>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-        {/* KPI cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-          {stats.map((s) => (
+
+      {/* Main content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Statistics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat) => (
             <div
-              key={s.label}
-              className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm"
+              key={stat.label}
+              className="bg-white rounded-lg shadow p-6 border border-gray-200 hover:border-gray-300 transition"
             >
-              <div className="text-xs uppercase tracking-wide text-gray-500 mb-1">
-                {s.label}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-medium">
+                    {stat.label}
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                    {stat.value}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {stat.delta}
+                  </p>
+                </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-bold text-black mb-1">
-                {s.value}
-              </div>
-              <div className="text-xs text-gray-600">{s.delta}</div>
             </div>
           ))}
         </div>
 
         {/* Recent Orders */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold text-black mb-6">Recent Orders</h2>
-          <div className="space-y-2">
-            {kpiLoading ? (
-              <div className="text-center py-12">
-                <div className="text-gray-500">Loading dashboard data...</div>
-              </div>
-            ) : displayOrders && displayOrders.length > 0 ? (
-              displayOrders.map((order) => (
-                <div
-                  key={order.id}
-                  className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2 flex-wrap">
-                        <span className="text-sm font-semibold text-gray-900">
-                          Order #{order.id}
-                        </span>
-                        <span
-                          className={`text-xs px-2 py-1 rounded font-semibold ${
-                            getStatusColor(order.status)
-                          }`}
-                        >
-                          {order.status?.charAt(0).toUpperCase() +
-                            order.status?.slice(1).toLowerCase()}
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-600 space-y-1">
-                        <div>
-                          {new Date(order.created_at).toLocaleDateString('en-GB', {
-                            dateStyle: 'medium',
-                          })}
-                        </div>
-                        <div>
-                          {order.items?.length || 0} item
-                          {(order.items?.length || 0) !== 1 ? 's' : ''}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-bold text-black text-lg">
-                        £{((order.total || 0) / 100).toFixed(2)}
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        {order.customer_name || 'Guest'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-12">
-                <div className="text-gray-500">No orders yet</div>
-              </div>
-            )}
+        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Orders
+            </h2>
           </div>
+          {displayOrders.length > 0 ? (
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    Order ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    Customer
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                    Date
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayOrders.map((order: any) => (
+                  <tr
+                    key={order.id}
+                    className="border-b border-gray-200 hover:bg-gray-50 transition"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-blue-600">
+                      <Link href={`/order/${order.id}`}>
+                        {order.id?.slice(-8).toUpperCase() || 'N/A'}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {order.customer?.name || 'Guest'}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {formatCurrency(order.total || 0)}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          getStatusColor(order.status)
+                        }`}
+                      >
+                        {order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1).toLowerCase() : ''}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {order.created_at
+                        ? new Date(order.created_at).toLocaleDateString('en-GB')
+                        : 'N/A'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="px-6 py-8 text-center">
+              <p className="text-gray-500">No recent orders</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
