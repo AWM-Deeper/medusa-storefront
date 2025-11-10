@@ -1,4 +1,5 @@
-const MEDUSA_URL = 'https://gohaste.medusajs.app';
+const MEDUSA_URL = process.env.EXPO_PUBLIC_MEDUSA_URL || 'https://gohaste.medusajs.app';
+const MEDUSA_API_KEY = process.env.EXPO_PUBLIC_MEDUSA_API_KEY || '';
 
 export interface Product {
   id: string;
@@ -52,30 +53,34 @@ export interface Address {
 
 class MedusaClient {
   private baseUrl: string;
+  private apiKey: string;
 
-  constructor(baseUrl: string = MEDUSA_URL) {
+  constructor(baseUrl: string = MEDUSA_URL, apiKey: string = MEDUSA_API_KEY) {
     this.baseUrl = baseUrl;
+    this.apiKey = apiKey;
   }
 
-  private async fetch<T>(
+  private async fetch(
     endpoint: string,
     options: RequestInit = {}
-  ): Promise<T> {
+  ): Promise<any> {
     const url = `${this.baseUrl}${endpoint}`;
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...(this.apiKey && { 'x-publishable-api-key': this.apiKey }),
+      ...options.headers,
+    };
+
     const defaultOptions: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
     };
 
     try {
       const response = await fetch(url, { ...defaultOptions, ...options });
-
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorBody = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorBody}`);
       }
-
       return await response.json();
     } catch (error) {
       console.error(`Fetch error for ${url}:`, error);
@@ -155,7 +160,7 @@ class MedusaClient {
   }
 
   // Orders
-  async createOrder(cartId: string, customerEmail: string): Promise<Order> {
+  async createOrder(cartId: string, customerEmail: string): Promise<any> {
     return this.fetch(`/store/carts/${cartId}/complete`, {
       method: 'POST',
       body: JSON.stringify({
