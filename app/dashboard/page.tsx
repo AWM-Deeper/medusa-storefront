@@ -274,4 +274,6 @@ export default function DashboardPage() {
             </table>
           </div>
         )}
-        {/* Analytics, Catalog, Inventory Tabs (optional - placeholder
+        {/* Analytics, Catalog, Inventory Tabs (optional - placeholder */}
+          );
+}
