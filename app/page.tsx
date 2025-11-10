@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 export default function HomePage() {
   const { products, productsLoading, fetchProducts } = useStore();
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
