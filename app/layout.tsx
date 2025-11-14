@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="hidden md:flex items-center gap-8 text-sm font-semibold">
               <Link href="/" className="hover:text-purple-600 transition-colors">Shop</Link>
               <Link href="#" className="hover:text-purple-600 transition-colors">About</Link>
-              <Link href="#" className="hover:text-purple-600 transition-colors">Contact</Link>
+              <Link  className="hover:text-purple-600 transition-colors">Contact</Link>
             </div>
 
             {/* Right Actions */}
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div>
                 <h4 className="font-bold mb-4 text-lg">Shop</h4>
                 <ul className="space-y-2 text-white/60 text-sm">
-                  <li><Link href="#" className="hover:text-white transition-colors">All Products</Link></li>
+                  <li><Link href="/contact" className="hover:text-white transition-colors">All Products</Link></li>
                   <li><Link href="#" className="hover:text-white transition-colors">New Arrivals</Link></li>
                   <li><Link href="#" className="hover:text-white transition-colors">On Sale</Link></li>
                   <li><Link href="#" className="hover:text-white transition-colors">Trending</Link></li>
