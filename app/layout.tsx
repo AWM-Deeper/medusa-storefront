@@ -23,9 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             {/* Center Navigation */}
             <div className="hidden md:flex items-center gap-8 text-sm font-semibold">
-              <Link href="/" className="hover:text-purple-600 transition-colors">Shop</Link>
-              <Link href="#" className="hover:text-purple-600 transition-colors">About</Link>
-              <Link  className="hover:text-purple-600 transition-colors">Contact</Link>
+                          <Link href="/" className="hover:text-gray-600 transition-colors">Shop</Link>
+                          <Link href="/about" className="hover:text-gray-600 transition-colors">About</Link>
+                          <Link href="/contact" className="hover:text-gray-600 transition-colors">Contact</Link>
             </div>
 
             {/* Right Actions */}
