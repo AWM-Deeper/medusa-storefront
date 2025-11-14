@@ -30,7 +30,7 @@ export default function HomePage() {
     if (searchQuery.trim()) {
       filtered = filtered.filter((p) =>
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
+        p.description?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
